@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Autofac;
 using Microsoft.Extensions.PlatformAbstractions;
 using WopiHost.Abstractions;
@@ -15,10 +16,12 @@ namespace WopiHost
 			var assembly = AppDomain.CurrentDomain.Load(new System.Reflection.AssemblyName(providerAssembly));
 #endif
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
             // Load file provider
             var path = PlatformServices.Default.Application.ApplicationBasePath;
-            var assembly = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(path + "\\" + providerAssembly + ".dll");
+            var assembly =
+                System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(
+                    $"{path}{Path.PathSeparator}{providerAssembly}.dll");
 #endif
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
         }
